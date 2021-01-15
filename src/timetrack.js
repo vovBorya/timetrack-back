@@ -57,4 +57,17 @@ exports.update = (db, req, res) => {
   })
 }
 
-exports.show = (db, res) => {}
+exports.show = (db, res, showArchive = false) => {
+  db.query(
+    'SELECT * FROM works WHERE archived = ?',
+    [showArchive],
+    (err, works) => {
+      if (err) throw err;
+      res.end(works);
+    }
+  )
+};
+
+exports.showArchived = (db, res) => {
+  exports.show(db, res, true);
+}
