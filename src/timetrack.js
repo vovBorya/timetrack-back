@@ -1,4 +1,5 @@
 const qs = require('querystring');
+const {Work} = require('./models/Work');
 
 exports.parseReceivedData = (req, cb) => {
   let body = '';
@@ -10,64 +11,39 @@ exports.parseReceivedData = (req, cb) => {
   });
 };
 
-exports.add = (db, req, res) => {
-  exports.parseReceivedData(req, (work) => {
-    const {hours, date, description} = work
-    db.query(
-      'INSERT INTO works (hours, date, description)' +
-      'VALUES (?, ?, ?)',
-      [hours, date, description],
-      (err) => {
-        if (err) throw err;
-        // return new obj
-        // show(db, res);
-      }
-    );
+exports.add = (req, res) => {
+  exports.parseReceivedData(req, async (work) => {
+    const {hours, date, description} = work;
+    const newWork = await Work.create({hours, date, description});
+    res.end(JSON.stringify(newWork));
   });
 };
 
-exports.delete = (db, req, res) => {
-  exports.parseReceivedData(req, (workId) => {
-    db.query(
-      'DELETE FROM works' +
-      'WHERE id = ?',
-      [workId],
-      (err) => {
-        if (err) throw err;
-        // return deleted id
-        // exports.show(db, res);
-      }
-    )
+exports.delete = (req, res) => {
+  exports.parseReceivedData(req,  async ({id}) => {
+    await Work.destroy({where: {id}});
+    res.end(JSON.stringify(parseInt(id)));
   })
 };
 
-exports.update = (db, req, res) => {
-  exports.parseReceivedData(req, (newWork) => {
+exports.update = (req, res) => {
+  exports.parseReceivedData(req, async (newWork) => {
     const {id, hours, date, archived, description} = newWork;
-    db.query(
-      'UPDATE works +' +
-      'SET hours = ?, date = ?, archived = ?, description = ?' +
-      'WHERE id = ?',
-      [hours, date, archived, description, id],
-      (err) => {
-        if (err) throw err;
-        //return updated obj
-      }
-    )
+    await Work.update({
+      date,
+      hours,
+      archived,
+      description,
+    }, {where: {id}})
+    res.end(JSON.stringify(newWork));
   })
 }
 
-exports.show = (db, res, showArchive = false) => {
-  db.query(
-    'SELECT * FROM works WHERE archived = ?',
-    [showArchive],
-    (err, works) => {
-      if (err) throw err;
-      res.end(works);
-    }
-  )
+exports.show = async (res, showArchive = false) => {
+  const works = await Work.findAll({where: {archived: showArchive}});
+  res.end(JSON.stringify(works, null, 2));
 };
 
-exports.showArchived = (db, res) => {
-  exports.show(db, res, true);
+exports.showArchived = (res) => {
+  exports.show(res, true);
 }
