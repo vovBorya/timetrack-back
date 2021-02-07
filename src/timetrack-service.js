@@ -11,7 +11,7 @@ exports.parseReceivedData = (req, cb) => {
   });
 };
 
-exports.add = (req, res) => {
+exports.create = (req, res) => {
   exports.parseReceivedData(req, async (work) => {
     const {hours, date, description} = work;
     const newWork = await Work.create({hours, date, description});
@@ -39,11 +39,22 @@ exports.update = (req, res) => {
   })
 }
 
-exports.show = async (res, showArchive = false) => {
+exports.getOne = async (res, id) => {
+  const work = await Work.findByPk(parseInt(id));
+  if (work === null) errorNotFound(res);
+  else res.end(JSON.stringify(work));
+}
+
+exports.getAll = async (res, showArchive = false) => {
   const works = await Work.findAll({where: {archived: showArchive}});
   res.end(JSON.stringify(works, null, 2));
 };
 
-exports.showArchived = (res) => {
-  exports.show(res, true);
+exports.getAllArchived = (res) => {
+  exports.getAll(res, true);
+}
+
+const errorNotFound = (res) => {
+  res.statusCode = 404;
+  res.end('Resource not found');
 }

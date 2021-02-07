@@ -1,6 +1,7 @@
 const http = require('http');
-const work = require('./timetrack');
+const workService = require('./timetrack-service');
 const mysql = require('mysql');
+const url = require('url');
 
 const HTTPMethod = {
   GET: 'GET',
@@ -21,23 +22,25 @@ const db = mysql.createConnection({
 const server = http.createServer((req, res) => {
   switch (req.method) {
     case HTTPMethod.POST:
-      work.add(req, res);
+      workService.create(req, res);
       break;
     case HTTPMethod.PUT:
-      work.update(req, res);
+      workService.update(req, res);
       break;
     case HTTPMethod.GET:
+      const query = url.parse(req.url, true).query;
+      if (query.id) workService.getOne(res, query.id);
       switch (req.url) {
         case '/':
-          work.show(res);
+          workService.getAll(res);
           break;
         case '/archived':
-          work.showArchived(res);
+          workService.getAllArchived(res);
           break;
       }
       break;
     case HTTPMethod.DELETE: {
-      work.delete(req, res);
+      workService.delete(req, res);
     }
   }
 });
