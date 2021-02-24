@@ -4,7 +4,7 @@ App for work account.
 
 ## API
 
-resouse obj `work: {
+resource obj `work: {
  id: number,
  hours: number,
  date: Date,
@@ -12,12 +12,12 @@ resouse obj `work: {
  description: string
 }`
 
-get all `GET` - `/`, response: work[]
+get all `GET` - `/api/works`, response: work[]
 
-get one `GET` - `/?id={id}`, response: work
+get one `GET` - `/api/works/{id}`, response: work
 
-create `POST` - `/` requset body: work, response: work
+create `POST` - `/api/works` request body: work, response: work
 
-update `PUT` - `/` requset body: work, response: work
+update `PUT` - `/api/works/{id}` request body: work, response: work
 
-update `DELETE` - `/?id={id}` response: `workId`
+update `DELETE` - `/api/works/{id}` response: `workId`

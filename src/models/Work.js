@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const {DataTypes} = require('sequelize');
 const {sequelize} = require('../db.config');
 
 const Work = sequelize.define('Work', {
@@ -9,18 +9,18 @@ const Work = sequelize.define('Work', {
   // },
   hours: {
     type: DataTypes.DECIMAL,
-    defaultValue: 0
+    defaultValue: 0,
   },
   date: DataTypes.DATE,
   archived: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
   },
   description: DataTypes.TEXT,
 }, {
   // Other model options go here
   tableName: 'works',
-  timestamps: false
+  timestamps: false,
 });
 
 // `sequelize.define` also returns the model

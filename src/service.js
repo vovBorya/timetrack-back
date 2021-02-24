@@ -1,4 +1,3 @@
-const qs = require('querystring');
 const {Work} = require('./models/Work');
 
 exports.parseReceivedData = (req, cb) => {
@@ -12,18 +11,19 @@ exports.parseReceivedData = (req, cb) => {
 };
 
 exports.create = (req, res) => {
-  exports.parseReceivedData(req, async (work) => {
-    const {hours, date, description} = work;
-    const newWork = await Work.create({hours, date, description});
-    res.end(JSON.stringify(newWork));
-  });
+  console.log({body: req.body});
+  // exports.parseReceivedData(req, async (work) => {
+  //   const {hours, date, description} = work;
+  //   const newWork = await Work.create({hours, date, description});
+  //   res.end(JSON.stringify(newWork));
+  // });
 };
 
 exports.delete = (req, res) => {
-  exports.parseReceivedData(req,  async ({id}) => {
+  exports.parseReceivedData(req, async ({id}) => {
     await Work.destroy({where: {id}});
     res.end(JSON.stringify(parseInt(id)));
-  })
+  });
 };
 
 exports.update = (req, res) => {
@@ -34,27 +34,24 @@ exports.update = (req, res) => {
       hours,
       archived,
       description,
-    }, {where: {id}})
+    }, {where: {id}});
     res.end(JSON.stringify(newWork));
-  })
-}
-
-exports.getOne = async (res, id) => {
-  const work = await Work.findByPk(parseInt(id));
-  if (work === null) errorNotFound(res);
-  else res.end(JSON.stringify(work));
-}
-
-exports.getAll = async (res, showArchive = false) => {
-  const works = await Work.findAll({where: {archived: showArchive}});
-  res.end(JSON.stringify(works, null, 2));
+  });
 };
 
-exports.getAllArchived = (res) => {
-  exports.getAll(res, true);
-}
+exports.getOne = async (req, res) => {
+  const work = await Work.findByPk(parseInt(req.params.workId));
+  if (work === null) errorNotFound(res);
+  else res.end(JSON.stringify(work));
+};
+
+exports.getAll = async (req, res) => {
+  // console.log({'getAll'});
+  const works = await Work.findAll({where: {archived: !!req.params.archived}});
+  res.send(JSON.stringify(works, null, 2));
+};
 
 const errorNotFound = (res) => {
   res.statusCode = 404;
   res.end('Resource not found');
-}
+};
