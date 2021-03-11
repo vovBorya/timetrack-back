@@ -3,12 +3,8 @@ const {sequelize} = require('../db.config');
 
 const Work = sequelize.define('Work', {
   // Model attributes are defined here
-  // id: {
-  //   type: DataTypes.INT,
-  //   allowNull: false
-  // },
   hours: {
-    type: DataTypes.DECIMAL,
+    type: DataTypes.FLOAT,
     defaultValue: 0,
   },
   date: DataTypes.DATE,

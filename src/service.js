@@ -10,33 +10,35 @@ exports.parseReceivedData = (req, cb) => {
   });
 };
 
-exports.create = (req, res) => {
-  console.log({body: req.body});
-  // exports.parseReceivedData(req, async (work) => {
-  //   const {hours, date, description} = work;
-  //   const newWork = await Work.create({hours, date, description});
-  //   res.end(JSON.stringify(newWork));
-  // });
+exports.create = async (req, res) => {
+  const {hours, date, description} = req.body;
+  const newWork = await Work.create({hours, date, description});
+  res.end(JSON.stringify(newWork));
 };
 
-exports.delete = (req, res) => {
-  exports.parseReceivedData(req, async ({id}) => {
-    await Work.destroy({where: {id}});
-    res.end(JSON.stringify(parseInt(id)));
-  });
+exports.delete = async (req, res) => {
+  const {workId} = req.params;
+  await Work.destroy({where: {id: workId}});
+  res.end(JSON.stringify(parseInt(workId)));
 };
 
-exports.update = (req, res) => {
-  exports.parseReceivedData(req, async (newWork) => {
-    const {id, hours, date, archived, description} = newWork;
-    await Work.update({
-      date,
-      hours,
-      archived,
-      description,
-    }, {where: {id}});
-    res.end(JSON.stringify(newWork));
-  });
+exports.update = async (req, res) => {
+  const {hours, date, description, archived} = req.body;
+  const {workId} = req.params;
+  console.log({hours, date, description, archived, workId});
+  await Work.update({
+    date,
+    hours,
+    archived,
+    description,
+  }, {where: {id: workId}});
+  res.end(JSON.stringify({
+    id: workId,
+    date,
+    hours,
+    archived,
+    description,
+  }));
 };
 
 exports.getOne = async (req, res) => {
@@ -46,7 +48,6 @@ exports.getOne = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  // console.log({'getAll'});
   const works = await Work.findAll({where: {archived: !!req.params.archived}});
   res.send(JSON.stringify(works, null, 2));
 };

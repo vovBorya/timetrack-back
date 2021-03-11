@@ -20,4 +20,4 @@ create `POST` - `/api/works` request body: work, response: work
 
 update `PUT` - `/api/works/{id}` request body: work, response: work
 
-update `DELETE` - `/api/works/{id}` response: `workId`
+delete `DELETE` - `/api/works/{id}` response: `workId`
